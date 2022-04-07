@@ -866,173 +866,32 @@ http GET http://h-taxi-grap:8080/actuator/health
 ## Config Map
 + PVC 생성
 ```diff
-kubectl apply -f - << EOF
+# spring-boot profile 세팅을 위해 OS 환경 변수 SPRING_PROFILES_ACTIVE, TZ 설정
+
 apiVersion: v1
-+ kind: PersistentVolumeClaim
+kind: ConfigMap
 metadata:
-  name: fs
-  labels:
-    app: test-pvc
-spec:
-  accessModes:
-  - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Mi
-EOF
-```
-+ Secret 객체 생성
-```diff
-kubectl apply -f - << EOF
-apiVersion: v1
-+ kind: Secret
-metadata:
-  name: mysql-pass
-type: Opaque
+  name: store-config
 data:
-  password: YWRtaW4=  
-EOF
-```
+ profile-k8s: “de,k8s”
+ timezone_seoul: “Asia/Seoul”
 
-+ 해당 Secret을 h-taxi-grap Deployment에 설정
-```diff
--          env:
-            - name: superuser.userId
-              value: userId
-            - name: _DATASOURCE_ADDRESS
-              value: mysql
-            - name: _DATASOURCE_TABLESPACE
-              value: orderdb
-            - name: _DATASOURCE_USERNAME
-              value: root
-            - name: _DATASOURCE_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: mysql-pass
-                  key: password
-```
-
-+ MySQL 설치
-```diff
-kubectl apply -f - << EOF
-apiVersion: v1
-kind: Pod
-metadata:
-  name: mysql
-  labels:
-    name: lbl-k8s-mysql
+---
++ Deployment.yaml 설정
+```diff	
 spec:
   containers:
-  - name: mysql
-+    image: mysql:latest
-    env:
-    - name: MYSQL_ROOT_PASSWORD
-      valueFrom:
-+        secretKeyRef:
-          name: mysql-pass
-          key: password
-    ports:
-    - name: mysql
-      containerPort: 3306
-      protocol: TCP
-    volumeMounts:
-    - name: k8s-mysql-storage
--      mountPath: /var/lib/mysql
-  volumes:
-  - name: k8s-mysql-storage
-    persistentVolumeClaim:
-      claimName: "fs"
-EOF
-
-kubectl expose pod mysql --port=3306
-```
-
-+ Pod 에 접속하여 h-taxi-db 데이터베이스 공간을 만들어주고 데이터베이스가 잘 동작하는지 확인
-```
-$ kubectl exec mysql -it -- bash
-
-# echo $MYSQL_ROOT_PASSWORD
-admin
-
-# mysql --user=root --password=$MYSQL_ROOT_PASSWORD
-
-mysql> create database orderdb;
-    -> ;
-Query OK, 1 row affected (0.01 sec)
-
-mysql> show databases;
-+--------------------+
-| Database           |
-+--------------------+
-| information_schema |
-| mysql              |
-| h-taxi-db            |
-| performance_schema |
-| sys                |
-+--------------------+
-5 rows in set (0.01 sec)
-
-mysql> exit
-```
-
-+ Pod 삭제 후 재생성하고 다시 db에 접속하여 `영속성` 확인
-```
-kubectl delete pod/mysql
-
-kubectl apply -f - << EOF
-apiVersion: v1
-kind: Pod
-metadata:
-  name: mysql
-  labels:
-    name: lbl-k8s-mysql
-spec:
-  containers:
-  - name: mysql
-    image: mysql:latest
-    env:
-    - name: MYSQL_ROOT_PASSWORD
-      valueFrom:
-        secretKeyRef:
-          name: mysql-pass
-          key: password
-    ports:
-    - name: mysql
-      containerPort: 3306
-      protocol: TCP
-    volumeMounts:
-    - name: k8s-mysql-storage
-!      mountPath: /var/lib/mysql
-  volumes:
-  - name: k8s-mysql-storage
-    persistentVolumeClaim:
-      claimName: "fs"
-EOF
-
-$ kubectl exec mysql -it -- bash
-
-# echo $MYSQL_ROOT_PASSWORD
-admin
-
-# mysql --user=root --password=$MYSQL_ROOT_PASSWORD
-
-mysql> create database orderdb;
-    -> ;
-Query OK, 1 row affected (0.01 sec)
-
-mysql> show databases;
-+--------------------+
-| Database           |
-+--------------------+
-| information_schema |
-| mysql              |
-| h-taxi-db            |
-| performance_schema |
-| sys                |
-+--------------------+
-5 rows in set (0.01 sec)
-
-mysql> exit
+      env:
+        - name: SPRING_PROFILES_ACTIVE 
+          valueFrom:
+            configMapKeyRef:
+              name: store-config     
+              key: profile-k8s 
+        - name: TZ
+          valueFrom:
+            configMapKeyRef:
+              name: store-config
+              key: timezone_seoul
 ```
 
 
