@@ -588,63 +588,9 @@ public class ApiTestApplication {
 
 
 ## Gateway
-+ gateway 및 virtualService 생성
-```diff
-kubectl apply -f - << EOF
-+ apiVersion: networking.istio.io/v1alpha3
-kind: VirtualService
-metadata:
-  name: h-taxi-grap
-spec:
-  hosts:
-    - "*"
-  gateways:
-  - h-taxi-grap
-  http:
-  - match:
-    - uri:
-        prefix: /h-taxi-grap
-    route:
-    - destination:
-        host: h-taxi-grap
-        port:
-          number: 8080
-EOF
-```
-```diff
-kubectl apply -f - << EOF
-+ apiVersion: networking.istio.io/v1alpha3
-kind: Gateway
-metadata:
-  name: h-taxi-grap
-spec:
-  selector:
-    istio: ingressgateway # use istio default controller
-  servers:
-  - port:
-      number: 80
-      name: http
-      protocol: HTTP
-    hosts:
-    - "*"
-EOF
-```
-- 서비스 호출 및 VirtualService가 정상적으로 서비스 되고 있음을 확인
-```diff
-- kubectl -n istio-system get service/istio-ingressgateway
-NAME                   TYPE           CLUSTER-IP      EXTERNAL-IP                                                                   PORT(S)                                                                      AGE
-istio-ingressgateway   LoadBalancer   10.100.31.171   ae4609bc10f1f42998c584fe14ca135e-995907846.ap-northeast-1.elb.amazonaws.com   15021:31779/TCP,80:31137/TCP,443:31132/TCP,31400:32094/TCP,15443:31807/TCP   19m
++ Istio Ingress Gateway 구현
 
-+ http http://ae4609bc10f1f42998c584fe14ca135e-995907846.ap-northeast-1.elb.amazonaws.com/h-taxi-grap/actuator/echo
-
-HTTP/1.1 200 OK
-content-length: 39
-content-type: text/plain;charset=UTF-8
-date: Tue, 29 Mar 2022 05:23:14 GMT
-server: envoy
-x-envoy-upstream-service-time: 215
-
-h-taxi-grap-67ff6476bb-ls9dw/192.168.33.76
+```diff
 
 ```	
 	
@@ -752,7 +698,8 @@ cache:
   paths:
     - '/root/.m2/**/*'
 ```
-![image](https://user-images.githubusercontent.com/50857564/162186454-6ab0690e-8de8-42b2-a7b9-ab246aed88e4.png)
+![image](https://user-images.githubusercontent.com/50857564/162190465-26b69ea3-3417-4d85-8f99-1f41f9375ef9.png)
+
 
 	
 ## Circuit Breaker
