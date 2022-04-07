@@ -802,26 +802,33 @@ cache:
 
 + DestinationRule 생성
 ```diff
-kubectl apply -f - << EOF
-+  apiVersion: networking.istio.io/v1alpha3
-  kind: DestinationRule
-  metadata:
-    name: h-taxi-grap
-  spec:
-    host: h-taxi-grap
--    trafficPolicy:
--      outlierDetection:
--        consecutive5xxErrors: 1
--        interval: 1s
--        baseEjectionTime: 3m
--        maxEjectionPercent: 100
-EOF
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: destrule-store
+spec:
+  host: store
+  trafficPolicy:
+    outlierDetection:
+      consecutive5xxErrors: 1
+      interval: 1s
+      baseEjectionTime: 3m
+      maxEjectionPercent: 100
 ```
 
 + Circuit Breaker 테스트 환경설정(`replicas=3`)
 
 ```
-kubectl scale deploy h-taxi-grap --replicas=3
+root@labs-1973364930:~# kubectl scale deploy store -n startbuck --replicas=3
+root@labs-1973364930:~# kubectl get pod -n startbuck
+NAME                            READY   STATUS    RESTARTS   AGE
+my-kafka-0                      2/2     Running   2          19m
+my-kafka-zookeeper-0            2/2     Running   0          19m
+user05-order-768fcb5bbd-6h28q   2/2     Running   12         56m
+user05-order-768fcb5bbd-7tqmb   2/2     Running   0          36s
+user05-order-768fcb5bbd-jhdsf   2/2     Running   0          36s
+user05-pay-66c8b5f6d9-fcrw7     2/2     Running   9          49m
+user05-store-748c8b9986-vf89c   2/2     Running   9          48m
 ```
 + 새 터미널에서 Http Client 컨테이너를 설치하고, 접속한다.
 ```
