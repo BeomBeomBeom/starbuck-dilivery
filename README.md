@@ -687,7 +687,8 @@ spec:
       weight: 0
 
 ```	
-![image](https://user-images.githubusercontent.com/50857564/162197861-492b64a0-5777-4f66-98aa-4b5b43f57c78.png)
+![image](https://user-images.githubusercontent.com/50857564/162198457-11d80b90-97db-4e55-814b-4c00282a73d0.png)
+
 
 
 ## Deploy / Pipeline
