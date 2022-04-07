@@ -649,16 +649,12 @@ h-taxi-grap-67ff6476bb-ls9dw/192.168.33.76
 ```	
 	
 
-## Deploy
+## Deploy / Pipeline
 
-+ deploy 테스트를 위한 k8s pod 생성
++ AWS 파이프라인을 통한 Deploy 
+https://github.com/BeomBeomBeom/starbuck-dilivery/edit/main/README.md
 
 
-<img src="https://github.com/yongdoohar/h-taxi/blob/main/aws.png" />
-
-+ git에 push될때 Webhook을 통한 빌드 유발 작동 확인
-<img src="https://github.com/yongdoohar/h-taxi/blob/main/codebuild.png" />
-	
 	
 ## Circuit Breaker
 
