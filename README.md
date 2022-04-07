@@ -860,7 +860,8 @@ http GET http://h-taxi-grap:8080/actuator/health
 ```
 + `2개`의 컨테이너만으로 서비스 유실 없이 서비스가 정상으로 처리됨을 확인한다.
 ```diff
-![image](https://user-images.githubusercontent.com/50857564/162259951-cb6450fe-a400-44fb-bb9c-9d02d921c54a.png)
+![image](https://user-images.githubusercontent.com/50857564/162261425-990212f1-01aa-4950-ab32-f02e1dcaa223.png)
+
 ```
 
 
