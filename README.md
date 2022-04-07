@@ -591,9 +591,104 @@ public class ApiTestApplication {
 + Istio Ingress Gateway 구현
 
 ```diff
+apiVersion: "networking.istio.io/v1alpha3"
+kind: "Gateway"
+metadata: 
+  name: starbuckdelivery
+spec: 
+  selector: 
+    istio: "ingressgateway"
+  servers: 
+    - 
+      port: 
+        number: 80
+        name: "http"
+        protocol: "HTTP"
+      hosts: 
+        - "*"
+---
+
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: vsvc-order
+spec:
+  gateways:
+  - starbuckdelivery
+  hosts:
+  - "*"
+  http:
+  - name: primary       # referenced in canary.trafficRouting.istio.virtualService.routes
+    match: 
+    - uri: 
+        exact: "/orders"
+    rewrite:
+      uri: "/"
+    route:
+    - destination:
+        host: order
+        subset: stable  # referenced in canary.trafficRouting.istio.destinationRule.stableSubsetName
+      weight: 100
+    - destination:
+        host: order
+        subset: canary  # referenced in canary.trafficRouting.istio.destinationRule.canarySubsetName
+      weight: 0
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: vsvc-pay
+spec:
+  gateways:
+  - starbuckdelivery
+  hosts:
+  - "*"
+  http:
+  - name: primary       # referenced in canary.trafficRouting.istio.virtualService.routes
+    match: 
+    - uri: 
+        exact: "/pays"
+    rewrite:
+      uri: "/"
+    route:
+    - destination:
+        host: pay
+        subset: stable  # referenced in canary.trafficRouting.istio.destinationRule.stableSubsetName
+      weight: 100
+    - destination:
+        host: pay
+        subset: canary  # referenced in canary.trafficRouting.istio.destinationRule.canarySubsetName
+      weight: 0
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: vsvc-store
+spec:
+  gateways:
+  - starbuckdelivery
+  hosts:
+  - "*"
+  http:
+  - name: primary       # referenced in canary.trafficRouting.istio.virtualService.routes
+    match: 
+    - uri: 
+        exact: "/stores"
+    rewrite:
+      uri: "/"
+    route:
+    - destination:
+        host: store
+        subset: stable  # referenced in canary.trafficRouting.istio.destinationRule.stableSubsetName
+      weight: 100
+    - destination:
+        host: store
+        subset: canary  # referenced in canary.trafficRouting.istio.destinationRule.canarySubsetName
+      weight: 0
 
 ```	
-	
+![image](https://user-images.githubusercontent.com/50857564/162197861-492b64a0-5777-4f66-98aa-4b5b43f57c78.png)
+
 
 ## Deploy / Pipeline
 
