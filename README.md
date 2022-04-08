@@ -390,7 +390,7 @@ spec:
                         cpu: 200m
                     readinessProbe:
 ---
-
+```
 + Autoscale 설정 및 horizontalpodautoscaler, hpa 확인
 
 ![image](https://user-images.githubusercontent.com/50857564/162348210-d60e7797-021d-4543-943f-e7ec4b7ec2d2.png)
