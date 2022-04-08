@@ -313,10 +313,7 @@ apk update
 apk add httpie
 - http POST http://localhost:8080/actuator/shutdown
 ```
-+ Siege로 서비스를 호출해 본다.
-```
-http GET http://h-taxi-grap:8080/actuator/health
-```
+
 + `2개`의 컨테이너만으로 서비스 유실 없이 서비스가 정상으로 처리됨을 확인한다.
 ![image](https://user-images.githubusercontent.com/50857564/162261587-3890c8d0-28f1-4f70-899c-ff6cb477e5b9.png)
 
