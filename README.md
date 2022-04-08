@@ -32,8 +32,6 @@
 
 ![image](https://user-images.githubusercontent.com/50857564/162357139-c3602096-e8d8-439b-922f-545627f4c718.png)
 
-+ 
-![image](https://user-images.githubusercontent.com/50857564/162361588-82bcd0de-ee04-40ae-9a7b-c1db0290c5a8.png)
 
 + order-> pay  sync / ordercancel -> pay async
 ![image](https://user-images.githubusercontent.com/50857564/162364911-a859d000-daca-457b-a39a-b05a86a8c75d.png)
