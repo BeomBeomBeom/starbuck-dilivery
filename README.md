@@ -472,12 +472,13 @@ import ...
 
 * `Interface 선언`을 통해 자동으로 Http Client 생성
 * 선언적 Http Client란, Annotation만으로 Http Client를 만들수 있고, 이를 통해서 원격의 Http API호출이 가능
- 
-+ 코드 수정
+
+![image](https://user-images.githubusercontent.com/50857564/162356672-0c3e14d4-79d5-4d7c-9923-b215135927b2.png)
+
 ![image](https://user-images.githubusercontent.com/50857564/162356398-751addf9-9ba0-4d89-ba00-8ecc2a3360da.png)
 
 + Run 
-<img src = '/images/Screen Shot 2022-03-29 at 0.54.37.png' width="900px">
+
 ###################################################################################################################################################
 
 ## Gateway
