@@ -585,7 +585,7 @@ public class ApiTestApplication {
 
 + Run 
 <img src = '/images/Screen Shot 2022-03-29 at 0.54.37.png' width="900px">
-
+###################################################################################################################################################
 
 ## Gateway
 + Istio Ingress Gateway 구현
@@ -955,16 +955,10 @@ spec:
                       periodSeconds: 5
                       failureThreshold: 5
 ```
-
-+ yaml 파일 적용 후 LoadBalancer 타입으로 배포
-
-```
-kubectl apply -f h-taxi-grab-liveness.yaml
-kubectl expose deploy h-taxi-grab --type=LoadBalancer --port=8080
-kubectl get svc
-``
-
-+ 팟 내에 진입하여 서비스 down 후 새로운 팟이 생성되고 기존 팟은 제거됨을 확인
+	
++ 팟 내에 진입하여 서비스 down 후 새로운 팟이 생성되고 기존 팟은 제거됨을 확인 
 ![image](https://user-images.githubusercontent.com/50857564/162353779-7c7deb34-3f0b-471f-b932-ce3b42d9c5cc.png)
 
 
++ initialDelaySeconds: init 과정에서 지연이 발생 하여  120 을 적용하여 신규 배포 시 신규 팟 생성 후 헬스 체크 가능한 시점에 svc 연결 확인
+	
