@@ -426,4 +426,5 @@ spec:
 
 + initialDelaySeconds: init 과정에서 지연이 발생 하여  120 을 적용하여 신규 배포 시 신규 팟 생성 후 헬스 체크 가능한 시점에 svc 연결 확인
 ![image](https://user-images.githubusercontent.com/50857564/162367873-214a42b9-cab5-4e58-9519-3705897d93c6.png)
+![image](https://user-images.githubusercontent.com/50857564/162368396-6a293f7e-5df7-46fd-8b3c-1857f266ec7e.png)
 
