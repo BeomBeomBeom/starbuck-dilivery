@@ -964,13 +964,7 @@ kubectl expose deploy h-taxi-grab --type=LoadBalancer --port=8080
 kubectl get svc
 ``
 
-+ 팟 내에 진입하여 서비스 down
-
-```diff
-http POST localhost:8080/actuator/shutdown
-```
-
-+ 새로운 팟이 생성되고 기존 팟은 제거됨을 확인
-
++ 팟 내에 진입하여 서비스 down 후 새로운 팟이 생성되고 기존 팟은 제거됨을 확인
+![image](https://user-images.githubusercontent.com/50857564/162353779-7c7deb34-3f0b-471f-b932-ce3b42d9c5cc.png)
 
 
