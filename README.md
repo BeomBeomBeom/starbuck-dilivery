@@ -23,7 +23,12 @@
 *전반적인 어플리케이션의 구조 및 흐름을 인지한 상태에서 실시한 이벤트 스토밍과정으로, 기초적인 이벤트 도출이나, Aggregation 작업은 `Bounded Context`를 먼저 선정하고 진행*
 ![image](https://user-images.githubusercontent.com/50857564/162133983-e1d4eda1-3098-4b2b-9557-3177ff15df7d.png)
 
+# SAGA 
++ Kafka 설치
+![image](https://user-images.githubusercontent.com/50857564/162357094-d6dea844-aa60-4f94-889b-030ea6b279a3.png)
 
++ 브로커 SVC 설정 확인
+![image](https://user-images.githubusercontent.com/50857564/162357139-c3602096-e8d8-439b-922f-545627f4c718.png)
 
 # Req / Resp (feign client)
 
