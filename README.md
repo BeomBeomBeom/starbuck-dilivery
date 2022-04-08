@@ -893,22 +893,7 @@ spec:
               name: store-config
               key: timezone_seoul
 ```
-+ Docker file 적용
-```diff	
-spec:
-  containers:
-      env:
-        - name: SPRING_PROFILES_ACTIVE 
-          valueFrom:
-            configMapKeyRef:
-              name: store-config     
-              key: profile-k8s 
-        - name: TZ
-          valueFrom:
-            configMapKeyRef:
-              name: store-config
-              key: timezone_seoul
-```
+
 
 
 ## Polyglot
