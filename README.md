@@ -918,6 +918,8 @@ spec:
         <artifactId>derby</artifactId>
         <scope>runtime</scope>
     </dependency>
++ 기동 로그에서 apache derby 확인
+![image](https://user-images.githubusercontent.com/50857564/162348986-a63ff935-d2e7-4b72-b82f-17521dc9c5fe.png)
 
 	
 	
@@ -948,40 +950,25 @@ spec:
 
 ## Self Healing
 
-+ `livenessProbe` 설정을 추가한 이미지 yaml 파일 작성
++ `livenessProbe` , 'ReadienessProbe' 설정을 deploy.yaml 파일에 작성
 
 ```yaml
-# h-taxi-grab-liveness.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: h-taxi-grab
-  labels:
-    app: h-taxi-grab
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: h-taxi-grab
-  template:
-    metadata:
-      labels:
-        app: h-taxi-grab
-    spec:
-      containers:
-        - name: h-taxi-grab
-          image: devgony/h-taxi-grab-liveness:latest
-          ports:
-            - containerPort: 8080
-          livenessProbe:
-            httpGet:
-              path: "/actuator/health"
-              port: 8080
-            initialDelaySeconds: 15
-            timeoutSeconds: 2
-            successThreshold: 1
-            periodSeconds: 5
-            failureThreshold: 3
+                    readinessProbe:
+                      httpGet:
+                        path: /actuator/health
+                        port: 8080
+                      initialDelaySeconds: 10
+                      timeoutSeconds: 2
+                      periodSeconds: 5
+                      failureThreshold: 10
+                    livenessProbe:
+                      httpGet:
+                        path: /actuator/health
+                        port: 8080
+                      initialDelaySeconds: 120
+                      timeoutSeconds: 2
+                      periodSeconds: 5
+                      failureThreshold: 5
 ```
 
 + yaml 파일 적용 후 LoadBalancer 타입으로 배포
@@ -990,128 +977,15 @@ spec:
 kubectl apply -f h-taxi-grab-liveness.yaml
 kubectl expose deploy h-taxi-grab --type=LoadBalancer --port=8080
 kubectl get svc
-```
+``
 
-```
-NAME          TYPE           CLUSTER-IP    EXTERNAL-IP   PORT(S)          AGE
-h-taxi-grab   LoadBalancer   10.40.2.145   <pending>     8080:31282/TCP   6ss
-```
-
-+ 해당 서비스의 health 확인
-
-```
-http 10.40.2.145:8080/actuator/health
-```
++ 팟 내에 진입하여 서비스 down
 
 ```diff
-HTTP/1.1 200
-Content-Type: application/vnd.spring-boot.actuator.v2+json;charset=UTF-8
-Date: Mon, 28 Mar 2022 06:53:49 GMT
-Transfer-Encoding: chunked
-
-{
-+    "status": "UP"
-}
+http POST localhost:8080/actuator/shutdown
 ```
 
-+ 서비스 down
++ 새로운 팟이 생성되고 기존 팟은 제거됨을 확인
 
-```
-http put 10.40.2.145:8080/actuator/down
-```
 
-```diff
-HTTP/1.1 200
-Content-Type: application/json;charset=UTF-8
-Date: Mon, 28 Mar 2022 06:54:30 GMT
-Transfer-Encoding: chunked
 
-{
--    "status": "DOWN"
-}
-```
-
-+ 서비스 down 이후에도 여전히 pod가 Running 중임을 확인
-
-```
-kubectl get pod
-```
-
-```
-NAME                          READY   STATUS    RESTARTS   AGE
-h-taxi-grab-95cb5c959-cq4th   1/1     Running   1          2m51s
-```
-
-+ describe 통해 해당 pod 세부 로그 확인
-
-```
-kubectl describe pod/h-taxi-grab-95cb5c959-cq4th
-```
-
-```diff
-...
-Name:         h-taxi-grab-95cb5c959-cq4th
-Namespace:    labs-1676586095
-Priority:     0
-Node:         gke-cluster-2-default-pool-a1811fce-bfcl/10.146.15.213
-Start Time:   Mon, 28 Mar 2022 06:52:10 +0000
-Labels:       app=h-taxi-grab
-              pod-template-hash=95cb5c959
-Annotations:  <none>
-Status:       Running
-IP:           10.36.5.6
-IPs:
-IP:           10.36.5.6
-Controlled By:  ReplicaSet/h-taxi-grab-95cb5c959
-Containers:
-  h-taxi-grab:
-    Container ID:   docker://0f59d6c23a68a81817b9e7d81fee3b0656c7c64c32b08db2429c37d18848dc1a
-    Image:          devgony/h-taxi-grab-liveness:latest
-    Image ID:       docker-pullable://devgony/h-taxi-grab-liveness@sha256:76c7e59956ad1411c08de4fb50df44ab72c01053eaf96646491eda9797dd8734
-    Port:           8080/TCP
-    Host Port:      0/TCP
-    State:          Running
-      Started:      Mon, 28 Mar 2022 06:54:48 +0000
-    Last State:     Terminated
-      Reason:       Error
-      Exit Code:    143
-      Started:      Mon, 28 Mar 2022 06:52:19 +0000
-      Finished:     Mon, 28 Mar 2022 06:54:45 +0000
-    Ready:          True
-    Restart Count:  1
-    Liveness:       http-get http://:8080/actuator/health delay=15s timeout=2s period=5s #success=1 #failure=3
-    Environment:    <none>
-    Mounts:
-      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-8nhg5 (ro)
-Conditions:
-  Type              Status
-  Initialized       True
-  Ready             True
-  ContainersReady   True
-  PodScheduled      True
-Volumes:
-  kube-api-access-8nhg5:
-    Type:                    Projected (a volume that contains injected data from multiple sources)
-    TokenExpirationSeconds:  3607
-    ConfigMapName:           kube-root-ca.crt
-    ConfigMapOptional:       <nil>
-    DownwardAPI:             true
-QoS Class:                   BestEffort
-Node-Selectors:              <none>
-Tolerations:                 node.kubernetes.io/not-ready:NoExecute for 300s
-                             node.kubernetes.io/unreachable:NoExecute for 300s
-Events:
-  Type     Reason     Age                  From                                               Message
-  ----     ------     ----                 ----                                               -------
-  Normal   Scheduled  <unknown>                                                               Successfully assigned labs-1676586095/h-taxi-grab-95cb5c959-cq4th to gke-cluster-2-default-pool-a1811fce-bfcl
-  Normal   Pulled     3m27s                kubelet, gke-cluster-2-default-pool-a1811fce-bfcl  Successfully pulled image "devgony/h-taxi-grab-liveness:latest" in 5.954773255s
-  Normal   Pulling    59s (x2 over 3m33s)  kubelet, gke-cluster-2-default-pool-a1811fce-bfcl  Pulling image "devgony/h-taxi-grab-liveness:latest"
--  Warning  Unhealthy  59s (x3 over 69s)    kubelet, gke-cluster-2-default-pool-a1811fce-bfcl  Liveness probe failed: HTTP probe failed with statuscode: 503
--  Normal   Killing    59s                  kubelet, gke-cluster-2-default-pool-a1811fce-bfcl  Container h-taxi-grab failed liveness probe, will be restarted
-+  Normal   Created    56s (x2 over 3m25s)  kubelet, gke-cluster-2-default-pool-a1811fce-bfcl  Created container h-taxi-grab
-+  Normal   Started    56s (x2 over 3m25s)  kubelet, gke-cluster-2-default-pool-a1811fce-bfcl  Started container h-taxi-grab
-+  Normal   Pulled     56s                  kubelet, gke-cluster-2-default-pool-a1811fce-bfcl  Successfully pulled image "devgony/h-taxi-grab-liveness:latest" in 2.704500252s
-```
-
-+ livenessProbe가 5초에 한번씩 health check 수행하다가 unhealthy 발견 하여 `Warning` 발생
-+ unhealthy 발견 즉시 `self-killing` & `healing` 수행한 것을 확인 가능
